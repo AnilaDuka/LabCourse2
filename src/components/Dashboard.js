@@ -24,7 +24,26 @@ export default function Dashbaord() {
           ))}
         </ul>
       </nav>
-      <main></main>
+      <main className={classes.main}>
+      <table class="table table-dark table-striped">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Image</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>data</td>
+              <td>data</td>
+              <td>data</td>
+              <td>data</td>
+            </tr>
+          </tbody>
+      </table>
+      </main>
     </div>
   );
 }

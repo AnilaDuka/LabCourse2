@@ -1,7 +1,7 @@
-const allTabs = [{ name: "Products" }, { name: "Categories" }];
+const allTabs = [{ name: "Products" }, { name: "Categories" }, { name: "Users" }, { name: "Suppliers" }];
 
-const [products, categories] = allTabs;
-const initialTabs = [products, categories];
+const [products, categories, users, suppliers] = allTabs;
+const initialTabs = [products, categories, users, suppliers];
 
 function getNextTab(tabs) {
   const existing = new Set(tabs);
