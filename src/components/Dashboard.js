@@ -8,7 +8,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchData("products"); // Fetch products by default
+    fetchData("Users"); // Fetch products by default
   }, []);
 
   const fetchData = async (tab) => {
@@ -22,7 +22,7 @@ export default function Dashboard() {
     }
   };
 
-  const tabs = ["products", "users", "suppliers", "categories"];
+  const tabs = ["Users", "Products", "Categories", "Suppliers"];
 
   return (
     <div className={classes.dashboard}>

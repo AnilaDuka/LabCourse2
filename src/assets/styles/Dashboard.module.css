@@ -1,11 +1,12 @@
 
 .dashboard {
-    width: 80vw;
+    width: 85vw;
+    margin: auto;
 }
 
 .nav {
   background: black;
-  padding: 5px 5px 0;
+  padding: 25px 5px;
   border-radius: 10px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -38,9 +39,12 @@
 .ul {
   display: flex;
   width: 100%;
+  gap: 5%;
+  align-items: center;
+  justify-content: space-evenly;
 }
 
-#li {
+/* #li {
   border-radius: 5px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -58,7 +62,7 @@
   min-width: 0;
   position: relative;
   user-select: none;
-}
+} */
 
 .underline {
   position: absolute;
@@ -70,7 +74,21 @@
 }
 
 .selected {
-  background: #eee;
+  color: #549aab;
+  padding: 10px;
+  border-radius: 8px;
+  width: 10%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+
+li {
+  color: white;
+  text-align: center;
+  width: 10%;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 #li .button {
