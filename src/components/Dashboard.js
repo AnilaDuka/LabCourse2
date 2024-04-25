@@ -151,6 +151,7 @@ export default function Dashboard() {
                   {selectedTab &&
                     data.length > 0 &&
                     Object.keys(data[0]).map((key) => <th key={key}>{key}</th>)}
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
