@@ -6,6 +6,10 @@ export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState(null);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [formData, setFormData] = useState({});
 
   useEffect(() => {
     fetchData("Users"); // Fetch products by default
@@ -20,6 +24,52 @@ export default function Dashboard() {
       console.error("Error fetching data:", error);
       setError("Error fetching data. Please try again later.");
     }
+  };
+
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      fetchData(selectedTab);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+
+  const handleAdd = () => {
+    setFormData({});
+    setAddModalOpen(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (selectedItem) {
+        await axios.put(
+          `http://localhost:5000/api/products/${selectedItem.productId}`,
+          formData
+        );
+      } else {
+        await axios.post("http://localhost:5000/api/products", formData);
+      }
+      fetchData(selectedTab);
+      setModalOpen(false);
+      setAddModalOpen(false);
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const tabs = ["Users", "Products", "Categories", "Suppliers"];
@@ -43,23 +93,145 @@ export default function Dashboard() {
         {error ? (
           <div className={classes.error}>{error}</div>
         ) : (
-          <table className="table table-dark table-striped">
-            <thead>
-              <tr>
-                {selectedTab &&
-                  Object.keys(data[0]).map((key) => <th key={key}>{key}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index}>
-                  {Object.values(item).map((value, index) => (
-                    <td key={index}>{value}</td>
-                  ))}
+          <>
+            <table className="table table-dark table-striped">
+              <thead>
+                <tr>
+                  {selectedTab &&
+                    data.length > 0 &&
+                    Object.keys(data[0]).map((key) => <th key={key}>{key}</th>)}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.map((item, index) => (
+                  <tr key={index}>
+                    {Object.values(item).map((value, index) => (
+                      <td key={index}>{value}</td>
+                    ))}
+                    <td>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => handleEdit(item)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(item.productId)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td
+                    colSpan={
+                      data.length > 0 ? Object.keys(data[0]).length + 1 : 1
+                    }
+                  >
+                    <button className="btn btn-success" onClick={handleAdd}>
+                      Add
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            {modalOpen && (
+              <div
+                className={`${classes.modal} modal fade show`}
+                tabIndex="-1"
+                role="dialog"
+                style={{ display: "block" }}
+              >
+                <div
+                  className={`${classes.modalContent} modal-dialog`}
+                  role="document"
+                >
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Edit Item</h5>
+                      <button
+                        type="button"
+                        className="close"
+                        onClick={() => setModalOpen(false)}
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      <form onSubmit={handleSubmit}>
+                        {selectedItem &&
+                          Object.keys(selectedItem).map((key) => (
+                            <div key={key}>
+                              <label htmlFor={key}>{key}</label>
+                              <input
+                                type="text"
+                                id={key}
+                                name={key}
+                                value={formData[key] || selectedItem[key]}
+                                onChange={handleChange}
+                                className="form-control"
+                              />
+                            </div>
+                          ))}
+                        <button type="submit" className="btn btn-primary">
+                          Submit
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {addModalOpen && (
+              <div
+                className={`${classes.modal} modal fade show`}
+                tabIndex="-1"
+                role="dialog"
+                style={{ display: "block" }}
+              >
+                <div
+                  className={`${classes.modalContent} modal-dialog`}
+                  role="document"
+                >
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Add Item</h5>
+                      <button
+                        type="button"
+                        className="close"
+                        onClick={() => setAddModalOpen(false)}
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      <form onSubmit={handleSubmit}>
+                        {data.length > 0 &&
+                          Object.keys(data[0]).map((key) => (
+                            <div key={key}>
+                              <label htmlFor={key}>{key}</label>
+                              <input
+                                type="text"
+                                id={key}
+                                name={key}
+                                value={formData[key] || ""}
+                                onChange={handleChange}
+                                className="form-control"
+                              />
+                            </div>
+                          ))}
+                        <button type="submit" className="btn btn-primary">
+                          Submit
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
