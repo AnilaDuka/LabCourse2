@@ -28,6 +28,7 @@ export default function Dashboard() {
 
   const handleEdit = (item) => {
     setSelectedItem(item);
+    setFormData({ ...item });
     setModalOpen(true);
   };
 
@@ -49,12 +50,29 @@ export default function Dashboard() {
     e.preventDefault();
     try {
       if (selectedItem) {
-        await axios.put(
-          `http://localhost:5000/api/products/${selectedItem.productId}`,
-          formData
-        );
+        let idFieldName;
+        switch (selectedTab) {
+          case "Products":
+            idFieldName = "productId";
+            break;
+          case "Categories":
+            idFieldName = "categoryId";
+            break;
+          default:
+            console.error("Invalid tab selected");
+            return;
+        }
+        const itemId = selectedItem[idFieldName];
+        if (itemId) {
+          await axios.put(
+            `http://localhost:5000/api/${selectedTab.toLowerCase()}/${itemId}`,
+            formData
+          );
+        } else {
+          console.error(`Invalid ID for ${selectedTab}`);
+        }
       } else {
-        await axios.post("http://localhost:5000/api/products", formData);
+        await axios.post(`http://localhost:5000/api/${selectedTab.toLowerCase()}`, formData);
       }
       fetchData(selectedTab);
       setModalOpen(false);
