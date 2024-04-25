@@ -32,10 +32,35 @@ export default function Dashboard() {
     setModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (item) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`);
-      fetchData(selectedTab);
+      let idFieldName;
+      switch (selectedTab) {
+        case "Products":
+          idFieldName = "productId";
+          break;
+        case "Categories":
+          idFieldName = "categoryId";
+          break;
+        case "Suppliers":
+          idFieldName = "supplierId";
+          break;
+        case "Users":
+          idFieldName = "userId";
+          break;
+        default:
+          console.error("Invalid tab selected");
+          return;
+      }
+      const itemId = item[idFieldName];
+      if (itemId) {
+        await axios.delete(
+          `http://localhost:5000/api/${selectedTab.toLowerCase()}/${itemId}`
+        );
+        fetchData(selectedTab);
+      } else {
+        console.error(`Invalid ID for ${selectedTab}`);
+      }
     } catch (error) {
       console.error("Error deleting item:", error);
     }
@@ -49,31 +74,39 @@ export default function Dashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (selectedItem) {
-        let idFieldName;
-        switch (selectedTab) {
-          case "Products":
-            idFieldName = "productId";
-            break;
-          case "Categories":
-            idFieldName = "categoryId";
-            break;
-          default:
-            console.error("Invalid tab selected");
-            return;
-        }
-        const itemId = selectedItem[idFieldName];
-        if (itemId) {
-          await axios.put(
-            `http://localhost:5000/api/${selectedTab.toLowerCase()}/${itemId}`,
-            formData
-          );
-        } else {
-          console.error(`Invalid ID for ${selectedTab}`);
-        }
-      } else {
-        await axios.post(`http://localhost:5000/api/${selectedTab.toLowerCase()}`, formData);
+      let idFieldName;
+      switch (selectedTab) {
+        case "Products":
+          idFieldName = "productId";
+          break;
+        case "Categories":
+          idFieldName = "categoryId";
+          break;
+        case "Suppliers":
+          idFieldName = "supplierId";
+          break;
+        case "Users":
+          idFieldName = "userId";
+          break;
+        default:
+          console.error("Invalid tab selected");
+          return;
       }
+
+      const itemId = selectedItem ? selectedItem[idFieldName] : null;
+
+      if (itemId) {
+        await axios.put(
+          `http://localhost:5000/api/${selectedTab.toLowerCase()}/${itemId}`,
+          formData
+        );
+      } else {
+        await axios.post(
+          `http://localhost:5000/api/${selectedTab.toLowerCase()}`,
+          formData
+        );
+      }
+
       fetchData(selectedTab);
       setModalOpen(false);
       setAddModalOpen(false);
@@ -135,7 +168,7 @@ export default function Dashboard() {
                       </button>
                       <button
                         className="btn btn-danger"
-                        onClick={() => handleDelete(item.productId)}
+                        onClick={() => handleDelete(item)}
                       >
                         Delete
                       </button>
